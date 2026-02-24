@@ -25,10 +25,10 @@ const ListPage = () => {
 
             console.log("API Response:", response.data);
 
-            // ✅ Correct API Path
+           
             const tableData = response.data?.TABLE_DATA?.data || [];
 
-            // ✅ Convert array format → object format (Professional Approach)
+            
             const formattedData = tableData.map((emp) => ({
                 name: emp[0],
                 position: emp[1],

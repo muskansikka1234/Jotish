@@ -11,7 +11,7 @@ const DetailsPage = () => {
     const canvasRef = useRef(null);
     const streamRef = useRef(null);
 
-    // 🎥 START CAMERA
+    // START CAMERA
     const startCamera = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -22,7 +22,7 @@ const DetailsPage = () => {
         }
     };
 
-    // 📸 CAPTURE PHOTO
+    // CAPTURE PHOTO
     const capturePhoto = () => {
 
         const video = videoRef.current;
@@ -41,20 +41,18 @@ const DetailsPage = () => {
 
         const image = canvas.toDataURL("image/png");
 
-        // 🔴 STOP CAMERA
+        // STOP CAMERA
         if (streamRef.current) {
             streamRef.current.getTracks().forEach(track => track.stop());
         }
 
         video.srcObject = null;
-
-        // 💾 SAVE IMAGE FOR STATIC DEPLOYMENT
         localStorage.setItem("capturedPhoto", image);
 
         navigate("/photo");
     };
 
-    // 🔴 TURN OFF CAMERA WHEN LEAVING PAGE
+    // TURN OFF CAMERA WHEN LEAVING PAGE
     useEffect(() => {
         return () => {
             if (streamRef.current) {
