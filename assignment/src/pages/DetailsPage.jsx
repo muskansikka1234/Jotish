@@ -1,6 +1,5 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
 
 const DetailsPage = () => {
 
@@ -10,34 +9,59 @@ const DetailsPage = () => {
 
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
+    const streamRef = useRef(null);
 
-    // Start Camera
+    // 🎥 START CAMERA
     const startCamera = async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: true,
-            });
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            streamRef.current = stream;
             videoRef.current.srcObject = stream;
-        } catch (err) {
+        } catch (error) {
             alert("Camera permission denied");
         }
     };
 
-    // Capture Photo
+    // 📸 CAPTURE PHOTO
     const capturePhoto = () => {
-        const canvas = canvasRef.current;
+
         const video = videoRef.current;
+        const canvas = canvasRef.current;
+
+        if (!video || video.videoWidth === 0) {
+            alert("Camera not ready!");
+            return;
+        }
 
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
 
         const ctx = canvas.getContext("2d");
-        ctx.drawImage(video, 0, 0);
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        const imageData = canvas.toDataURL("image/png");
+        const image = canvas.toDataURL("image/png");
 
-        navigate("/photo", { state: { photo: imageData } });
+        // 🔴 STOP CAMERA
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop());
+        }
+
+        video.srcObject = null;
+
+        // 💾 SAVE IMAGE FOR STATIC DEPLOYMENT
+        localStorage.setItem("capturedPhoto", image);
+
+        navigate("/photo");
     };
+
+    // 🔴 TURN OFF CAMERA WHEN LEAVING PAGE
+    useEffect(() => {
+        return () => {
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(track => track.stop());
+            }
+        };
+    }, []);
 
     if (!employee) {
         return <h2 className="text-white text-center mt-10">No Data Found</h2>;
@@ -45,6 +69,7 @@ const DetailsPage = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-r from-black to-blue-900 text-white p-10">
+
             <h1 className="text-3xl font-bold mb-6">Employee Details</h1>
 
             <div className="bg-white/10 p-6 rounded-xl mb-6">
@@ -76,7 +101,7 @@ const DetailsPage = () => {
 
             <canvas ref={canvasRef} style={{ display: "none" }} />
         </div>
-    )
-}
+    );
+};
 
-export default DetailsPage
+export default DetailsPage;
