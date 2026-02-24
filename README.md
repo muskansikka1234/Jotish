@@ -114,7 +114,7 @@ L.Icon.Default.mergeOptions({
 Clone the repository:
 
 ```bash
-git clone <your-repo-link>
+git clone https://github.com/muskansikka1234/Jotish.git
 ```
 
 Navigate to project folder:
